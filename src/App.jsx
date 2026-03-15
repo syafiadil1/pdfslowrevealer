@@ -276,7 +276,7 @@ function App() {
       <div className="background-grid" />
       <main className="app">
         <section className="hero">
-          <p className="eyebrow">Result Reveal</p>
+          <p className="eyebrow">Gradual Reveal</p>
           <h1>Made by Syafi.</h1>
           <p className="hero-copy">
             Everything stays in your browser. Use autoplay for a clean reveal or drag the slider to
