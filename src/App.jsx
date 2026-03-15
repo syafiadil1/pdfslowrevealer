@@ -277,7 +277,7 @@ function App() {
       <main className="app">
         <section className="hero">
           <p className="eyebrow">Result Reveal</p>
-          <h1>Upload a PDF or screenshot, then uncover it from top to bottom.</h1>
+          <h1>Made by Syafi.</h1>
           <p className="hero-copy">
             Everything stays in your browser. Use autoplay for a clean reveal or drag the slider to
             control exactly how much is visible.
