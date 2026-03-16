@@ -63,6 +63,8 @@ function App() {
   const animationFrameRef = useRef(0);
   const lastFrameRef = useRef(0);
   const objectUrlRef = useRef('');
+  const stageRef = useRef(null);
+  const isDraggingStageRef = useRef(false);
 
   const stageSource = useMemo(() => {
     if (documentState.kind === 'image') {
@@ -248,6 +250,49 @@ function App() {
     setIsPlaying(false);
   }
 
+  function updateProgressFromPointer(clientY) {
+    if (!stageRef.current || !stageSource || isRenderingPdf) {
+      return;
+    }
+
+    const bounds = stageRef.current.getBoundingClientRect();
+    const nextProgress = clamp((clientY - bounds.top) / bounds.height, 0, 1);
+
+    setProgress(nextProgress);
+    setIsPlaying(false);
+  }
+
+  function handleStagePointerDown(event) {
+    if (!stageSource || isRenderingPdf) {
+      return;
+    }
+
+    isDraggingStageRef.current = true;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    updateProgressFromPointer(event.clientY);
+  }
+
+  function handleStagePointerMove(event) {
+    if (!isDraggingStageRef.current) {
+      return;
+    }
+
+    updateProgressFromPointer(event.clientY);
+  }
+
+  function handleStagePointerUp(event) {
+    if (!isDraggingStageRef.current) {
+      return;
+    }
+
+    isDraggingStageRef.current = false;
+    event.currentTarget.releasePointerCapture(event.pointerId);
+  }
+
+  function handleStagePointerLeave() {
+    isDraggingStageRef.current = false;
+  }
+
   function togglePlayback() {
     if (!stageSource || isRenderingPdf) {
       return;
@@ -382,7 +427,15 @@ function App() {
               <span className="stage-pill">{documentState.kind ? documentState.kind.toUpperCase() : 'READY'}</span>
             </div>
 
-            <div className={`reveal-stage ${stageSource ? 'loaded' : ''}`}>
+            <div
+              ref={stageRef}
+              className={`reveal-stage ${stageSource ? 'loaded interactive' : ''}`}
+              onPointerDown={handleStagePointerDown}
+              onPointerMove={handleStagePointerMove}
+              onPointerUp={handleStagePointerUp}
+              onPointerCancel={handleStagePointerUp}
+              onPointerLeave={handleStagePointerLeave}
+            >
               {stageSource ? (
                 <>
                   <img src={stageSource} alt="Reveal preview" className="stage-image" />
